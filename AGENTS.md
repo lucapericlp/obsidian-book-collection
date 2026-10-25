@@ -11,6 +11,12 @@ failure or partial fetch. Escape remote text; preserve every byte outside that
 block, including personal Notes. Only explicit metadata sync may update owned
 frontmatter fields. Preserve paths and source/mode/book identity.
 
+The user chose folder-only discovery. Start at the configured book notes folder
+and inspect only that folder and its visible subfolders. Never enumerate the
+vault root, vault-wide Markdown files, or all cached files. Do not discover,
+reopen, or sync a book note outside the configured folder. Renames/moves inside
+the folder retain stable identity; outside notes remain untouched and undiscovered.
+
 Keep API tokens only in Obsidian's native secret storage. Never include personal
 vaults, library exports, journals, local setup scripts, credentials, or machine
 paths in Git or release assets. Fixtures must be synthetic or public book metadata.

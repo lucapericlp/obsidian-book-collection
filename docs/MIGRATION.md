@@ -16,6 +16,14 @@ hotkeys to the new command IDs. Do not copy credential values or run both plugin
 at the same time. Verify the chosen source, live/sample mode, CSV path, and notes
 folder before refreshing anything.
 
-The new plugin will reopen tracked notes by their existing `book_key`. It does not
+The new plugin will reopen tracked notes inside the configured book folder and
+its visible subfolders by their existing `book_key`. In 0.6.2 and later, notes
+outside that tree are not discovered or synced. Before migrating or changing the
+folder setting, move the book notes you want managed into that tree, or select a
+folder containing them. The plugin does not search elsewhere for an older copy;
+selecting a book whose old note is outside the tree can create a new in-folder
+note. Outside notes remain untouched.
+
+The plugin does not
 rename notes or automatically rewrite the old plugin configuration. Existing
 Hardcover journal entries stay remote and are never re-created during migration.

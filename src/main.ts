@@ -22,6 +22,7 @@ import { InsightProjection } from './insights';
 import { GoodreadsCsvSource } from './sources/goodreads';
 import { HardcoverSource, HARDCOVER_SCOPES } from './sources/hardcover';
 import { SampleSource } from './sources/sample';
+import { bookNotePaths, requireBookFolderPath } from './book-folder';
 
 export default class BookCollectionPlugin extends Plugin {
   declare settings: BooksSettings;
@@ -33,30 +34,36 @@ export default class BookCollectionPlugin extends Plugin {
     this.settings = loadSettings(stored);
     if (stored && typeof stored === 'object' && ['mcpEnabled', 'mcpPort', 'mcpSecret'].some(key => key in stored)) await this.saveData(this.settings);
     this.notes = new BookNotes({
-      findByKey: key => {
-        const matches = this.app.vault.getMarkdownFiles().filter(file => this.app.metadataCache.getFileCache(file)?.frontmatter?.book_key === key);
+      findByKey: (key, folder) => {
+        const matches = this.bookFiles(folder).filter(file => this.app.metadataCache.getFileCache(file)?.frontmatter?.book_key === key);
         if (matches.length > 1) throw new Error('More than one note has this book_key. Resolve the duplicate before syncing.');
         return matches[0]?.path;
       },
       exists: path => this.app.vault.getAbstractFileByPath(path) !== null,
-      read: path => this.app.vault.adapter.read(path),
+      read: path => { requireBookFolderPath(path, this.settings.noteFolder); return this.app.vault.adapter.read(path); },
       ensureFolder: path => this.ensureFolder(path),
-      create: async (path, content) => { await this.app.vault.create(path, content); },
+      create: async (path, content) => { requireBookFolderPath(path, this.settings.noteFolder); await this.app.vault.create(path, content); },
     });
     this.insightProjection = new InsightProjection(async book => {
       const source = this.source();
       if (!(source instanceof HardcoverSource)) throw new Error('Select your live Hardcover collection before refreshing insights.');
       const secretName = this.settings.hardcoverSecret;
+      const folder = vaultPath(this.settings.noteFolder);
       const token = this.app.secretStorage.getSecret(secretName);
       const snapshot = await source.loadInsights(book.id);
       if (this.settings.source !== 'hardcover' || this.settings.hardcoverMode !== 'live' || this.settings.hardcoverSecret !== secretName || this.app.secretStorage.getSecret(secretName) !== token) throw new Error('The selected Hardcover account changed during refresh. The previous view was kept; refresh again.');
+      if (vaultPath(this.settings.noteFolder) !== folder) throw new Error('The book notes folder changed during refresh. The previous view was kept; refresh again.');
       return snapshot;
     }, {
-      read: path => this.app.vault.adapter.read(path),
+      read: path => { requireBookFolderPath(path, this.settings.noteFolder); return this.app.vault.adapter.read(path); },
       process: async (path, transform) => {
         const file = this.app.vault.getAbstractFileByPath(path);
         if (!(file instanceof TFile)) throw new Error('The tracked book note moved or is no longer available. Refresh again.');
-        return this.app.vault.process(file, transform);
+        requireBookFolderPath(file.path, this.settings.noteFolder);
+        return this.app.vault.process(file, content => {
+          requireBookFolderPath(file.path, this.settings.noteFolder);
+          return transform(content);
+        });
       },
     }, yaml => parseYaml(yaml) as unknown);
     this.addCommand({
@@ -97,6 +104,7 @@ export default class BookCollectionPlugin extends Plugin {
   }
 
   async syncInsightsForNote(file: TFile) {
+    requireBookFolderPath(file.path, this.settings.noteFolder);
     if (this.settings.source !== 'hardcover' || this.settings.hardcoverMode !== 'live') throw new Error('Select your live Hardcover collection before refreshing insights.');
     const content = await this.app.vault.read(file);
     const header = content.match(/^\uFEFF?---\r?\n([\s\S]*?)\r?\n---(?:\r?\n|$)/)?.[1];
@@ -112,12 +120,14 @@ export default class BookCollectionPlugin extends Plugin {
 
   private async syncNote(book: Book, path: string): Promise<boolean> {
     if (book.source !== 'hardcover' || book.mode !== 'live') return false;
+    requireBookFolderPath(path, this.settings.noteFolder);
     const file = this.app.vault.getAbstractFileByPath(path);
     if (!(file instanceof TFile)) throw new Error('The tracked book note is no longer available.');
     const parse = (yaml: string) => parseYaml(yaml) as unknown;
     if (!syncBookMetadata(await this.app.vault.read(file), book, parse).changed) return false;
     let changed = false;
     await this.app.vault.process(file, content => {
+      requireBookFolderPath(file.path, this.settings.noteFolder);
       const result = syncBookMetadata(content, book, parse);
       changed = result.changed;
       return result.content;
@@ -197,8 +207,13 @@ export default class BookCollectionPlugin extends Plugin {
 
   async openPicker(mention?: { editor: Editor; sourcePath: string }): Promise<void> {
     const { books, label } = await this.getCollection();
-    new BookPicker(this.app, books, label, mention ? 'mention' : 'open', book => this.run(async () => {
+    const existingKeys = new Set(this.bookFiles(this.settings.noteFolder).flatMap(file => {
+      const key: unknown = this.app.metadataCache.getFileCache(file)?.frontmatter?.book_key;
+      return typeof key === 'string' ? [key] : [];
+    }));
+    new BookPicker(this.app, books, existingKeys, label, mention ? 'mention' : 'open', book => this.run(async () => {
       const note = await this.notes.ensure(book, this.settings.noteFolder);
+      requireBookFolderPath(note.path, this.settings.noteFolder);
       try { await this.syncNote(book, note.path); }
       catch (error) { new Notice(`Book metadata was not synced: ${error instanceof Error ? error.message : 'Check the note frontmatter.'}`, 9000); }
       const file = this.app.vault.getAbstractFileByPath(note.path);
@@ -238,17 +253,24 @@ export default class BookCollectionPlugin extends Plugin {
       }
     }
   }
+
+  private bookFiles(folder: string): TFile[] {
+    const paths = bookNotePaths(folder, path => {
+      const node = this.app.vault.getAbstractFileByPath(path);
+      if (!node) return [];
+      if (!(node instanceof TFolder)) throw new Error('The book notes folder path points to a file. Choose a folder in settings.');
+      return node.children.map(child => ({
+        path: child.path,
+        kind: child instanceof TFolder ? 'folder' : child instanceof TFile && child.extension.toLowerCase() === 'md' ? 'markdown' : 'other',
+      }));
+    });
+    return paths.map(path => this.app.vault.getAbstractFileByPath(path)).filter((file): file is TFile => file instanceof TFile);
+  }
 }
 
 class BookPicker extends FuzzySuggestModal<Book> {
-  private readonly existingKeys: Set<string>;
-
-  constructor(app: App, private readonly books: Book[], label: string, action: 'open' | 'mention', private readonly choose: (book: Book) => void) {
+  constructor(app: App, private readonly books: Book[], private readonly existingKeys: Set<string>, label: string, action: 'open' | 'mention', private readonly choose: (book: Book) => void) {
     super(app);
-    this.existingKeys = new Set(app.vault.getMarkdownFiles().flatMap(file => {
-      const key: unknown = app.metadataCache.getFileCache(file)?.frontmatter?.book_key;
-      return typeof key === 'string' ? [key] : [];
-    }));
     this.modalEl.addClass('book-collection-picker');
     this.setPlaceholder('Search book title or author…');
     this.setInstructions([{ command: '↑ ↓', purpose: 'choose a book' }, { command: '↵', purpose: action === 'open' ? 'open reading note' : 'insert mention' }, { command: 'esc', purpose: 'close' }]);
@@ -317,7 +339,7 @@ class BooksSettingsTab extends PluginSettingTab {
       },
       {
         name: 'Book notes folder',
-        desc: 'Relative to this vault. Existing tracked notes keep their paths.',
+        desc: 'Discovery and syncing stay within this folder and its subfolders. Notes moved outside it are no longer discovered.',
         render: setting => { setting.addText(text => text
           .setValue(this.plugin.settings.noteFolder)
           .onChange(value => this.plugin.run(async () => {

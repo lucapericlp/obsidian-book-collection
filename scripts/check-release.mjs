@@ -25,4 +25,5 @@ assert(!/hc_pat_[A-Za-z0-9]{12,}/.test(bundle), 'A credential-like value leaked 
 assert(bundle.includes('https://api.hardcover.app/v1/graphql'));
 assert(!/\bmutation\s+\w/.test(bundle), 'The plugin must not mutate the Hardcover service.');
 assert(!/require\(["'](?:node:|@modelcontextprotocol)/.test(bundle), 'Unexpected Node.js or MCP runtime dependency.');
+assert(!/\.\s*(?:getMarkdownFiles|getFiles|getAllLoadedFiles|getCachedFiles|getRoot)\s*\(/.test(bundle), 'Book discovery must not use a vault-wide file or cache list.');
 process.stdout.write(`Release assets verified for ${manifest.id} ${manifest.version}; nothing was published.\n`);

@@ -30,6 +30,9 @@ maps, machine paths, obvious PATs, journal mutations, or bundled MCP/Node import
 - An MIT license, account/network/privacy disclosures, and security guidance.
 - Read-only direct Hardcover API access, explicit Goodreads CSV import, and no
   dependency on any personal MCP deployment.
+- Book-note discovery and sync confined to the configured folder and its visible
+  subfolders, as requested by the owner. No vault-wide file enumeration or cache
+  enumeration. Notes outside that tree remain untouched and undiscovered.
 - No automatic updates, telemetry, background polling, or outside-vault access.
 - A CI gate that builds artifacts but has no publish/release permissions or steps.
 - A separate main-branch-only CI job signs provenance for the three verified

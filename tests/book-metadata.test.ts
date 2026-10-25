@@ -57,8 +57,8 @@ void test('quoted hash characters and nested unknown properties survive a genuin
   assert.equal(body(result.content), body(original));
 });
 
-void test('moved or renamed notes sync by stable book identity and never create another path', async () => {
-  const path = 'Personal reading/Renamed note.md';
+void test('moved or renamed notes within the book folder sync by identity and keep their path', async () => {
+  const path = 'Books/Personal reading/Renamed note.md';
   const files = new Map([[path, renderBookNote({ ...book, status: 'Want to read' }) + 'Keep my writing.']]);
   const store: NoteStore = {
     findByKey: key => key === bookKey(book) ? path : undefined,

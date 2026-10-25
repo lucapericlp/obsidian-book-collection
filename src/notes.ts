@@ -2,9 +2,10 @@ import { bookKey, vaultPath, type Book } from './model';
 import { bookMetadata } from './book-metadata';
 import { pendingInsightsBlock } from './insights';
 import { replaceControls } from './text-safety';
+import { requireBookFolderPath } from './book-folder';
 
 export interface NoteStore {
-  findByKey(key: string): string | undefined;
+  findByKey(key: string, folder: string): string | undefined;
   exists(path: string): boolean;
   read(path: string): Promise<string>;
   ensureFolder(path: string): Promise<void>;
@@ -63,9 +64,10 @@ export class BookNotes {
   constructor(private readonly store: NoteStore) {}
 
   async find(book: Book, folder: string): Promise<string | undefined> {
+    folder = vaultPath(folder);
     const key = bookKey(book);
-    const indexed = this.store.findByKey(key);
-    if (indexed) return indexed;
+    const indexed = this.store.findByKey(key, folder);
+    if (indexed) { requireBookFolderPath(indexed, folder); return indexed; }
     const stem = noteStem(book);
     let counter = 1;
     while (true) {
@@ -77,10 +79,11 @@ export class BookNotes {
   }
 
   ensure(book: Book, folder: string): Promise<BookNote> {
-    const key = bookKey(book);
+    folder = vaultPath(folder);
+    const key = `${bookKey(book)}:${folder}`;
     const existing = this.pending.get(key);
     if (existing) return existing;
-    const operation = this.ensureNote(book, vaultPath(folder));
+    const operation = this.ensureNote(book, folder);
     this.pending.set(key, operation);
     void operation.finally(() => this.pending.delete(key)).catch(() => undefined);
     return operation;
@@ -88,8 +91,8 @@ export class BookNotes {
 
   private async ensureNote(book: Book, folder: string): Promise<BookNote> {
     const key = bookKey(book);
-    const existing = this.store.findByKey(key);
-    if (existing) return { path: existing, created: false };
+    const existing = this.store.findByKey(key, folder);
+    if (existing) { requireBookFolderPath(existing, folder); return { path: existing, created: false }; }
     await this.store.ensureFolder(folder);
     const stem = noteStem(book);
     let counter = 1;

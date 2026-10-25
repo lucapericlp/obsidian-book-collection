@@ -14,7 +14,8 @@ entry is a draft under review; it is not yet published in the community director
 - Refresh reading status, rating, and other managed book properties.
 - Refresh the complete set of Hardcover journal notes and quotes on demand.
 - Display dates, visibility, and available page or percentage positions.
-- Preserve personal writing, unrelated frontmatter, and moved or renamed notes.
+- Preserve personal writing, unrelated frontmatter, and renamed notes within the
+  configured book folder.
 - Import an official Goodreads library CSV without signing into Goodreads.
 
 ## Set up Hardcover
@@ -56,6 +57,13 @@ Configure the note folder in settings. Assign shortcuts in **Settings → Hotkey
 the plugin sets no default hotkeys. Opening a live book refreshes its metadata;
 the Insights commands separately refresh its journal view.
 
+Discovery and syncing are limited to the configured book folder and its visible
+subfolders. Renaming or moving a note inside that tree preserves its identity.
+Moving it outside the tree, or changing the configured folder, makes it
+undiscoverable to the plugin. Move it back or select its containing folder before
+syncing again. Selecting the same book while its old note is outside the folder
+can create a new note inside the configured folder; the outside note is untouched.
+
 ### Insights and personal writing
 
 Hardcover is the source of truth for journal insights. The plugin fetches every
@@ -81,10 +89,11 @@ or conversational integration is required by this plugin.
 - Personal Notes, Markdown edits, and Goodreads reviews are not uploaded.
 - The plugin has no analytics, telemetry, background polling, automatic updates,
   journal mutations, or filesystem access outside the vault.
-- To find tracked book notes after you move or rename them, the plugin enumerates
-  Markdown file paths and their cached `book_key` frontmatter throughout this
-  vault. Paths and unrelated note contents are not sent to Hardcover or any other
-  service. It reads and updates the selected tracked book notes locally.
+- Book-note discovery inspects Markdown paths and cached `book_key` frontmatter
+  only inside the configured book folder and its visible subfolders. It does not
+  enumerate the vault root or request a vault-wide file/cache list. Paths and
+  unrelated note contents are not uploaded. A Goodreads CSV is read only from its
+  separately configured import path.
 - No separate payment is collected by this plugin. Third-party services set
   their own account and API conditions.
 - Private Hardcover insights are copied into your vault when you refresh them.

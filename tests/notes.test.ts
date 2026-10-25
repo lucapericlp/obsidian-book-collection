@@ -2,6 +2,7 @@ import assert from 'node:assert/strict';
 import { test } from 'node:test';
 import { bookKey, type Book } from '../src/model';
 import { BookNotes, noteStem, renderBookNote, type NoteStore } from '../src/notes';
+import { isInBookFolder } from '../src/book-folder';
 
 const book: Book = { id: '123', title: 'A Book', authors: ['Ada Example'], source: 'hardcover', mode: 'live', status: 'Read', rating: 4.5 };
 
@@ -11,7 +12,10 @@ class MemoryStore implements NoteStore {
   readonly folders = new Set<string>();
   creations = 0;
 
-  findByKey(key: string): string | undefined { return this.indexed.get(key); }
+  findByKey(key: string, folder: string): string | undefined {
+    const path = this.indexed.get(key);
+    return path && isInBookFolder(path, folder) ? path : undefined;
+  }
   exists(path: string): boolean { return this.files.has(path); }
   async read(path: string): Promise<string> { return this.files.get(path)!; }
   async ensureFolder(path: string): Promise<void> { this.folders.add(path); }
@@ -44,15 +48,48 @@ void test('concurrent selections create one note', async () => {
   assert.equal(store.creations, 1);
 });
 
-void test('renamed or moved indexed notes reopen by stable source identity after title and folder changes', async () => {
+void test('renamed notes and notes moved within the book folder reopen by stable identity', async () => {
   const store = new MemoryStore();
-  const path = 'Reading/Personal title.md';
+  const path = 'Books/Reading/Personal title.md';
   store.files.set(path, 'My writing');
   store.indexed.set(bookKey(book), path);
   const note = await new BookNotes(store).ensure({ ...book, title: 'Updated remote title' }, 'Books');
   assert.deepEqual(note, { path, created: false });
   assert.equal(store.files.get(path), 'My writing');
   assert.equal(store.creations, 0);
+});
+
+void test('notes outside the selected book folder are not discovered or modified', async () => {
+  const store = new MemoryStore();
+  const path = 'Personal/Reading.md';
+  store.files.set(path, 'Outside writing stays untouched');
+  store.indexed.set(bookKey(book), path);
+  const notes = new BookNotes(store);
+  assert.equal(await notes.find(book, 'Books'), undefined);
+  const note = await notes.ensure(book, 'Books');
+  assert(note.created && note.path.startsWith('Books/'));
+  assert.equal(store.files.get(path), 'Outside writing stays untouched');
+  assert.equal((await notes.ensure(book, 'Personal')).path, path);
+});
+
+void test('an out-of-scope index result is rejected before any read, creation, or folder change', async () => {
+  const store = new MemoryStore();
+  store.findByKey = () => 'Bookshelf/Other.md';
+  store.read = async () => { throw new Error('Unexpected outside read'); };
+  const notes = new BookNotes(store);
+  await assert.rejects(() => notes.find(book, 'Books'), /outside the configured/);
+  await assert.rejects(() => notes.ensure(book, 'Books'), /outside the configured/);
+  assert.equal(store.creations, 0);
+  assert.equal(store.folders.size, 0);
+});
+
+void test('concurrent selections in different configured folders do not share an old-folder result', async () => {
+  const store = new MemoryStore();
+  const notes = new BookNotes(store);
+  const [first, second] = await Promise.all([notes.ensure(book, 'Books'), notes.ensure(book, 'Reading')]);
+  assert(first.path.startsWith('Books/'));
+  assert(second.path.startsWith('Reading/'));
+  assert.equal(store.creations, 2);
 });
 
 void test('unrelated filename collisions get a new path without replacing or opening the unrelated note', async () => {

@@ -146,3 +146,34 @@ The dashboard still explicitly states that this entry is in **draft mode and not
 yet visible to the public**. Its **Publish** control was not used. GitHub release
 assets are public under the owner's separate authorization; community publication
 remains deferred. The original main vault and its installed prototype are unchanged.
+
+## 0.6.2: owner-selected folder-only discovery
+
+The owner explicitly chose to limit discovery to the configured book folder,
+superseding the retained 0.6.1 advisory decision. The plugin now starts at that
+folder via `getAbstractFileByPath` and walks only its visible descendants. It never
+requests a vault-wide file list, root listing, or cache listing. Hidden folders,
+sibling prefixes, traversal paths, and malformed child listings are excluded or
+rejected. A missing folder returns an empty discovery set without broadening scope.
+
+The picker, note lookup, metadata sync, and insight sync share this boundary.
+An active book note outside the configured tree is rejected before file reads or
+network requests. Indexed results are checked again before reopening. Folder
+changes during insight fetching keep the old snapshot; concurrent selections for
+different folders cannot reuse an older folder's pending result.
+
+Renames/moves inside the configured tree keep stable book identity. Notes outside
+it are not discovered or modified. Selecting the same book can create a new note
+inside the selected folder; README and migration guidance describe this tradeoff.
+
+All **49 tests** pass, including seven new boundary/concurrency regressions. Strict
+type checking, official lint rules with zero warnings, the build, and asset checks
+pass. Asset checks also reject vault-wide listing calls in the production bundle.
+
+Native Obsidian 1.14.4 verification in the isolated test vault used a plugin-only
+proxy that throws on vault-wide listing APIs and any out-of-folder path/cache
+lookup. It discovered four book notes, reopened the existing in-folder book note,
+and rejected an outside active note. It made no network requests and preserved
+every Markdown file's SHA-256. The prototype's enabled state was restored; no main
+vault installation was changed. The hosted 0.6.2 result is recorded below when
+available; earlier release results remain historical.

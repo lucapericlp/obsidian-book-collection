@@ -16,6 +16,21 @@ Version 0.6.0, plugin ID `book-collection`, minimum Obsidian 1.13.0.
   MCP/Node imports in the three release assets.
 - `npm audit --audit-level=low`: zero vulnerabilities in the complete locked tree.
 
+## Passed in private GitHub CI
+
+[Verify plugin run 40185542521](https://github.com/lucapericlp/obsidian-book-collection/actions/runs/40185542521)
+passed for source commit `cb92785f2b3423a1ddbd510cfcecf24ab9065e0c` on
+Ubuntu with Node.js 22. The full `npm ci` and verification gate passed. Its
+downloaded private artifact matches the local macOS build byte for byte:
+
+| Asset | SHA-256 |
+| --- | --- |
+| `main.js` | `c5dc5368faed66e771e564cb80961918b3845af78a051f77f7689bd2667f7649` |
+| `manifest.json` | `3c16775d78b7fe79dfb6ada9bd6f19c0468d5da8de4416b8c4202093340ab81d` |
+| `styles.css` | `bfdf1a9ff59c993ed67a89e77f855834e7c8db3caaa74835e6a4402cd0a5cea3` |
+
+CI building on Linux is not the same as testing inside the Linux Obsidian app.
+
 ## Native Obsidian smoke check
 
 The built candidate loaded in the existing isolated test vault under Obsidian

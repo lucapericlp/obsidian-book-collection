@@ -102,3 +102,47 @@ The dashboard does not rerun a completed release when **Check for new releases**
 is selected again. Candidate 0.6.1 therefore incorporates the provenance workflow
 before release review. No runtime book or journal behavior is changed by that
 candidate. The directory's **Publish** control remains untouched.
+
+Release 0.6.1 was built and attested by
+[run 40187132515](https://github.com/lucapericlp/obsidian-book-collection/actions/runs/40187132515)
+from `87cf4b2a968a9f94c3cff0eb26592996cb7890c7`. All three local assets passed
+`gh attestation verify` constrained to that exact source digest, this repository's
+`verify.yml` signer workflow, and GitHub-hosted runners. The published tag and
+release target match the verified commit. Asset digests are:
+
+- `main.js`: `c5dc5368faed66e771e564cb80961918b3845af78a051f77f7689bd2667f7649`
+- `manifest.json`: `0119e88153b5adb23ef1e8302fac55db2961f9142b6782fd31e86779b0d57872`
+- `styles.css`: `bfdf1a9ff59c993ed67a89e77f855834e7c8db3caaa74835e6a4402cd0a5cea3`
+
+Moved-note support is preserved while the vault-enumeration recommendation is
+assessed. Removing discovery by merely switching to another enumeration API would
+not reduce access, and restricting it to one folder would change existing moved-
+note behavior. No workaround was used to hide that capability from the scanner.
+
+## Final hosted result for 0.6.1
+
+The [Obsidian management dashboard](https://community.obsidian.md/account/plugins/book-collection)
+shows **Completed** for release **0.6.1**, commit `87cf4b2`, with **zero errors,
+zero warnings, eight Pass results, and one Recommendation**:
+
+| Check | Hosted result |
+| --- | --- |
+| `main.js` GitHub artifact attestation | Pass |
+| `styles.css` GitHub artifact attestation | Pass |
+| Network patterns | Pass |
+| Vault reads through Obsidian API | Pass |
+| Vault writes through Obsidian API | Pass |
+| Dependency vulnerabilities | Pass |
+| Code obfuscation | Pass |
+| Byte-for-byte reproduction of release `main.js` | Pass |
+| Vault-wide Markdown metadata enumeration | Recommendation |
+
+The enumeration advisory is retained to preserve existing moved/renamed book-note
+discovery, consistent with the established design, and its local-only scope is
+documented in README. It is not a failed check. A folder-only alternative would
+change that behavior; it was offered as a product choice, not silently applied.
+
+The dashboard still explicitly states that this entry is in **draft mode and not
+yet visible to the public**. Its **Publish** control was not used. GitHub release
+assets are public under the owner's separate authorization; community publication
+remains deferred. The original main vault and its installed prototype are unchanged.

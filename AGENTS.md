@@ -18,7 +18,8 @@ paths in Git or release assets. Fixtures must be synthetic or public book metada
 Run `npm run verify` before committing. Keep all official Obsidian source checks
 enabled. The user made this repository public and submitted a draft community
 entry on 25 October 2026. Pushing fixes and running hosted preview scans are
-authorized. Publishing the community listing remains deferred. Do not create a
-public GitHub release merely to replace an available branch preview scan.
+authorized. The user subsequently authorized publishing GitHub release assets
+needed for the release review, while explicitly keeping the Obsidian listing in
+draft. Publishing the community listing remains deferred.
 Do not replace an existing installed plugin ID automatically. The standalone ID
 is `book-collection`; the earlier private prototype used `obsidian-books`.

@@ -1,7 +1,8 @@
 # Community submission readiness
 
-This is a public-source, unpublished release candidate. The owner submitted a draft
-community-directory entry on 25 October 2026. Local checks remain preparation,
+This is a public-source release candidate. The owner submitted a draft
+community-directory entry on 25 October 2026 and authorized publishing GitHub
+release 0.6.0 for review while keeping the community listing in draft. Local checks remain preparation,
 not a substitute for Obsidian's hosted scan. No public release, Git tag, or
 community publication is created by any script.
 
@@ -31,6 +32,9 @@ maps, machine paths, obvious PATs, journal mutations, or bundled MCP/Node import
   dependency on any personal MCP deployment.
 - No automatic updates, telemetry, background polling, or outside-vault access.
 - A CI gate that builds artifacts but has no publish/release permissions or steps.
+- A separate main-branch-only CI job signs provenance for the three verified
+  artifacts. Its only write permissions are OIDC identity and attestations;
+  pull-request builds have no attestation job or release write permission.
 - A new settings interface using the public 1.13 declarative API; minimum
   app version is raised to 1.13.0 accordingly. Desktop only until mobile is tested.
 
@@ -47,11 +51,12 @@ Only after the owner chooses to proceed:
    the exact candidate commit, then record and fix its findings. This does not
    require a GitHub release. The local ESLint gate does not replicate every scan.
 5. Keep the directory's **Publish** control untouched until explicitly authorized.
-6. When authorized to release, create a tag exactly matching `manifest.version`
+6. GitHub release 0.6.0 is published with the owner's authorization. For later
+   release fixes, create a new tag exactly matching `manifest.version`
    (without `v`) and attach `dist/main.js`, `dist/manifest.json`, `dist/styles.css`
    to its GitHub release. Recheck asset/build correspondence.
-7. Complete the directory submission, address all hosted errors, and publish only
-   when the owner explicitly requests it.
+7. Address all hosted release-review errors. Keep the community listing in draft
+   and publish it only when the owner explicitly requests it.
 
 For the eventual prototype migration, follow [MIGRATION.md](MIGRATION.md).
 The original working vault and installed prototype are deliberately unchanged.

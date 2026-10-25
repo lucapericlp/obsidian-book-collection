@@ -4,8 +4,8 @@ Turn books in your Hardcover or Goodreads library into linked notes in your vaul
 Refresh Hardcover notes and quotes into a read-only **Insights** section, while
 keeping your personal writing in **Notes**.
 
-This repository is an unpublished release candidate. Its Obsidian Community entry
-is a draft under review; it is not yet published in the community directory.
+This is a release candidate, available from GitHub releases. Its Obsidian Community
+entry is a draft under review; it is not yet published in the community directory.
 
 ## Features
 
@@ -81,6 +81,10 @@ or conversational integration is required by this plugin.
 - Personal Notes, Markdown edits, and Goodreads reviews are not uploaded.
 - The plugin has no analytics, telemetry, background polling, automatic updates,
   journal mutations, or filesystem access outside the vault.
+- To find tracked book notes after you move or rename them, the plugin enumerates
+  Markdown file paths and their cached `book_key` frontmatter throughout this
+  vault. Paths and unrelated note contents are not sent to Hardcover or any other
+  service. It reads and updates the selected tracked book notes locally.
 - No separate payment is collected by this plugin. Third-party services set
   their own account and API conditions.
 - Private Hardcover insights are copied into your vault when you refresh them.
@@ -111,6 +115,10 @@ the same vault; see [migration notes](docs/MIGRATION.md).
 See [submission readiness](docs/SUBMISSION.md) for the checks and remaining
 user-controlled publication steps. The CI workflow only validates and uploads
 build artifacts; it never tags, releases, publishes, or submits the plugin.
+Successful builds of the main branch also produce GitHub artifact attestations.
+These identify the workflow and source revision that built each asset. They use
+short-lived GitHub workflow credentials, with no repository or release write
+permission; pull-request builds cannot publish attestations.
 
 ## License and acknowledgments
 

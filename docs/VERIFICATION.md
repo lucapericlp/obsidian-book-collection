@@ -66,6 +66,39 @@ listing. A preview of commit `de711d80867a80174c92dfe7710d86c420330057` was requ
 the dependency check passed first while the remaining checks continued running.
 
 The exact preview results live on that management page. Do not confuse a preview
-scan with a published release review. The page's missing-release notice is expected
-while no matching GitHub release exists. No release or listing publication has
-been authorized by this preview-check request.
+scan with a published release review. At this checkpoint the missing-release
+notice prevented release validation; it did not indicate a source-code failure.
+
+## Authorized release review
+
+The owner then explicitly authorized **GitHub releases only**, keeping the Obsidian
+directory listing in draft. Release 0.6.0 was published from commit
+`8ead8edcfbf6a1e9e1cbba4d91fef09e879f6be0`. Its three public download files were
+checked against the verified local bytes. The tag points at that exact commit.
+
+Obsidian's hosted release scan completed with **zero errors and zero warnings**.
+It reported these passes:
+
+- No suspicious network patterns.
+- Vault read and vault write use Obsidian's API.
+- No vulnerable dependencies.
+- No code obfuscation.
+- The scanner reproduced release `main.js` byte for byte.
+
+Two recommendations were reported: GitHub artifact attestations, and vault-wide
+Markdown metadata enumeration. Neither was an error or warning. The enumeration
+supports finding tracked notes after moves/renames and does not upload paths or
+unrelated file contents. Its purpose and scope are disclosed in the README.
+
+## Build provenance and next candidate
+
+Main-branch CI now creates GitHub attestations for all three verified assets.
+[Run 40186898887](https://github.com/lucapericlp/obsidian-book-collection/actions/runs/40186898887)
+passed verification and the separate attestation job. `gh attestation verify`
+successfully verified `main.js`, `manifest.json`, and `styles.css` against this
+repository; their digests matched the already published 0.6.0 files.
+
+The dashboard does not rerun a completed release when **Check for new releases**
+is selected again. Candidate 0.6.1 therefore incorporates the provenance workflow
+before release review. No runtime book or journal behavior is changed by that
+candidate. The directory's **Publish** control remains untouched.

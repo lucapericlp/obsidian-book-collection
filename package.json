@@ -1,6 +1,6 @@
 {
   "name": "obsidian-book-collection",
-  "version": "0.6.0",
+  "version": "0.6.1",
   "private": true,
   "type": "module",
   "description": "Track Hardcover and Goodreads books in your vault and refresh a read-only view of Hardcover insights.",

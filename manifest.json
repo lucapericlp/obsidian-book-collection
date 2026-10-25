@@ -1,0 +1,10 @@
+{
+  "id": "book-collection",
+  "name": "Book Collection",
+  "version": "0.6.0",
+  "minAppVersion": "1.13.0",
+  "description": "Track Hardcover and Goodreads books, create linked book notes, and refresh Hardcover insights while preserving personal writing.",
+  "author": "Luca Peric",
+  "isDesktopOnly": true,
+  "authorUrl": "https://github.com/lucapericlp"
+}

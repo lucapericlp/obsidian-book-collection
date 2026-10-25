@@ -1,0 +1,40 @@
+{
+  "name": "obsidian-book-collection",
+  "version": "0.6.0",
+  "private": true,
+  "type": "module",
+  "description": "Track Hardcover and Goodreads books in your vault and refresh a read-only view of Hardcover insights.",
+  "scripts": {
+    "build": "node scripts/build.mjs",
+    "dev": "node scripts/build.mjs --watch",
+    "typecheck": "tsc --noEmit",
+    "test": "node --import tsx --test tests/*.test.ts",
+    "lint": "eslint . --max-warnings 0",
+    "verify": "npm run typecheck && npm run lint && npm test && npm run build && npm run check:release",
+    "check:release": "node scripts/check-release.mjs"
+  },
+  "devDependencies": {
+    "@types/node": "^22.0.0",
+    "esbuild": "0.28.2",
+    "eslint": "10.13.0",
+    "eslint-plugin-obsidianmd": "0.4.2",
+    "obsidian": "1.14.4",
+    "tsx": "4.23.15",
+    "typescript": "5.9.3",
+    "yaml": "2.9.1"
+  },
+  "license": "MIT",
+  "author": "Luca Peric",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/lucapericlp/obsidian-book-collection.git"
+  },
+  "overrides": {
+    "eslint-plugin-obsidianmd": {
+      "obsidian": "$obsidian"
+    }
+  },
+  "engines": {
+    "node": ">=22.13.0"
+  }
+}

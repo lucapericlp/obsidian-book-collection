@@ -1,0 +1,28 @@
+import assert from 'node:assert/strict';
+import { readFile, readdir } from 'node:fs/promises';
+
+const readJson = async path => JSON.parse(await readFile(path, 'utf8'));
+const manifest = await readJson('manifest.json');
+const packageInfo = await readJson('package.json');
+const versions = await readJson('versions.json');
+assert(/^[a-z]+(?:-[a-z]+)*$/.test(manifest.id), 'Use a lowercase hyphenated plugin ID.');
+assert(!manifest.id.includes('obsidian') && !manifest.id.endsWith('plugin'), 'The plugin ID is not community compliant.');
+assert(/^\d+\.\d+\.\d+$/.test(manifest.version), 'Use a plain x.y.z version without a v prefix.');
+assert.equal(manifest.version, packageInfo.version, 'Package and manifest versions differ.');
+assert.equal(versions[manifest.version], manifest.minAppVersion, 'Record minimum compatibility in versions.json.');
+assert.equal(packageInfo.license, 'MIT');
+assert.equal(typeof manifest.isDesktopOnly, 'boolean');
+assert(manifest.description.length <= 250 && manifest.description.endsWith('.'), 'Use a short description ending in a period.');
+for (const file of ['README.md', 'LICENSE', 'SECURITY.md', 'docs/SUBMISSION.md']) assert((await readFile(file, 'utf8')).trim().length > 0, `Missing ${file}.`);
+const expected = ['main.js', 'manifest.json', 'styles.css'].sort();
+assert.deepEqual((await readdir('dist')).sort(), expected, 'Unexpected or missing release assets.');
+assert.equal(await readFile('dist/manifest.json', 'utf8'), await readFile('manifest.json', 'utf8'));
+assert.equal(await readFile('dist/styles.css', 'utf8'), await readFile('styles.css', 'utf8'));
+const bundle = await readFile('dist/main.js', 'utf8');
+assert(bundle.length > 0 && !bundle.includes('sourceMappingURL='), 'Production bundle must not contain a source map.');
+assert(!/\/(Users|home)\/[^/]+\//.test(bundle), 'A machine-specific path leaked into the release.');
+assert(!/hc_pat_[A-Za-z0-9]{12,}/.test(bundle), 'A credential-like value leaked into the release.');
+assert(bundle.includes('https://api.hardcover.app/v1/graphql'));
+assert(!/\bmutation\s+\w/.test(bundle), 'The plugin must not mutate the Hardcover service.');
+assert(!/require\(["'](?:node:|@modelcontextprotocol)/.test(bundle), 'Unexpected Node.js or MCP runtime dependency.');
+process.stdout.write(`Release assets verified for ${manifest.id} ${manifest.version}; nothing was published.\n`);

@@ -1,0 +1,5 @@
+Book Id,Title,Author,Additional Authors,ISBN,ISBN13,My Rating,Exclusive Shelf,Original Publication Year,My Review
+900000001,"The Library, at Dusk",Ada Example,,="0123456789",="9780123456786",4,currently-reading,2024,"Fictional sample review with a comma, and a ""quote"".
+This second line tests multiline CSV imports."
+900000002,Notes from a Quiet Planet,Sam Sample,,,,0,to-read,2023,
+900000003,A Map of Small Things,Jo Placeholder,,,,5,read,2022,

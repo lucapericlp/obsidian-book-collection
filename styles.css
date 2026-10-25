@@ -1,0 +1,25 @@
+.book-collection-picker .suggestion-content {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.book-collection-title {
+  font-weight: 600;
+}
+
+.book-collection-detail,
+.book-collection-context {
+  color: var(--text-muted);
+  font-size: var(--font-ui-small);
+}
+
+.book-collection-context {
+  padding: 10px 16px;
+  border-bottom: 1px solid var(--background-modifier-border);
+}
+
+.book-collection-empty {
+  padding: 12px 0;
+  color: var(--text-muted);
+}

@@ -1,0 +1,10 @@
+node_modules/
+dist/
+test-vault/
+.DS_Store
+.env
+.env.*
+*.local.json
+*.log
+.obsidian/
+coverage/

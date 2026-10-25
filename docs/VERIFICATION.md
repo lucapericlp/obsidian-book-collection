@@ -43,7 +43,7 @@ The check made no network requests and used no real journal mutations or live
 credentials. The main vault and its installed prototype were not changed.
 Windows, Linux and mobile runtime tests remain unperformed.
 
-## Official hosted review is pending
+## Initial hosted-review checkpoint
 
 The signed-in Obsidian Community dashboard's **New plugin** form was inspected.
 Before submission it requires the owner's agreement to Developer Policies and a
@@ -51,7 +51,21 @@ commitment to maintain the plugin (or remove/transfer it if support ends).
 Neither checkbox was selected and **Submit** was not pressed. No directory entry
 or official hosted review result has been created for this candidate.
 
-The repository remains private. No tag or GitHub release was created. The normal
+At that initial checkpoint the repository was private. No tag or GitHub release was created. The normal
 CI workflow may validate changes and retain private build artifacts, but contains
 no release or community submission action. Local passes do not stand in for the
 directory's full security/build scanner or final acceptance.
+
+## Owner submission and hosted preview
+
+Later on 25 October 2026, the owner made the repository public and submitted a
+draft entry. Its [management page](https://community.obsidian.md/account/plugins/book-collection)
+explicitly states that the entry is not yet visible to the public. **Review branch**
+can run the hosted automated review without creating a release or publishing the
+listing. A preview of commit `de711d80867a80174c92dfe7710d86c420330057` was requested;
+the dependency check passed first while the remaining checks continued running.
+
+The exact preview results live on that management page. Do not confuse a preview
+scan with a published release review. The page's missing-release notice is expected
+while no matching GitHub release exists. No release or listing publication has
+been authorized by this preview-check request.

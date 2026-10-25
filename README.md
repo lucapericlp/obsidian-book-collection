@@ -4,8 +4,8 @@ Turn books in your Hardcover or Goodreads library into linked notes in your vaul
 Refresh Hardcover notes and quotes into a read-only **Insights** section, while
 keeping your personal writing in **Notes**.
 
-This repository is an unpublished release candidate. It is not yet listed in
-Obsidian's community directory and has not received an official review result.
+This repository is an unpublished release candidate. Its Obsidian Community entry
+is a draft under review; it is not yet published in the community directory.
 
 ## Features
 
@@ -110,7 +110,7 @@ the same vault; see [migration notes](docs/MIGRATION.md).
 
 See [submission readiness](docs/SUBMISSION.md) for the checks and remaining
 user-controlled publication steps. The CI workflow only validates and uploads
-private build artifacts; it never tags, releases, publishes, or submits the plugin.
+build artifacts; it never tags, releases, publishes, or submits the plugin.
 
 ## License and acknowledgments
 

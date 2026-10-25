@@ -1,8 +1,9 @@
 # Community submission readiness
 
-This is a private, unpublished release candidate. Local checks are preparation,
-not an official approval or a claim that the Obsidian-hosted scan has passed.
-No directory entry, public release, Git tag, or publication is created by any script.
+This is a public-source, unpublished release candidate. The owner submitted a draft
+community-directory entry on 25 October 2026. Local checks remain preparation,
+not a substitute for Obsidian's hosted scan. No public release, Git tag, or
+community publication is created by any script.
 
 ## Repeatable local gate
 
@@ -40,14 +41,12 @@ Only after the owner chooses to proceed:
 1. Review the final plugin name, license, README and privacy disclosures.
 2. Test the candidate on supported desktop platforms and establish mobile support
    separately before changing `isDesktopOnly`.
-3. Make the repository accessible to Obsidian's reviewer. The documented submission
-   flow requires GitHub source access. Do not assume a private repository can be
-   scanned without an explicit supported authorization flow.
-4. Sign into the Obsidian Community developer dashboard and link GitHub. The owner
-   must handle any account creation, legal terms, or new account grants.
-5. If available before publication, use **Review branch** to run Obsidian's hosted
-   preview scan against the exact candidate commit, then record and fix its findings.
-   The local ESLint gate does not replicate every hosted scan.
+3. Repository source access and the initial draft submission are complete. Any
+   future legal agreements or additional account grants remain owner-controlled.
+4. Use **Review branch** on the draft to run Obsidian's hosted preview scan against
+   the exact candidate commit, then record and fix its findings. This does not
+   require a GitHub release. The local ESLint gate does not replicate every scan.
+5. Keep the directory's **Publish** control untouched until explicitly authorized.
 6. When authorized to release, create a tag exactly matching `manifest.version`
    (without `v`) and attach `dist/main.js`, `dist/manifest.json`, `dist/styles.css`
    to its GitHub release. Recheck asset/build correspondence.

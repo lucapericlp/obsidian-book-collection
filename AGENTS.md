@@ -16,7 +16,9 @@ vaults, library exports, journals, local setup scripts, credentials, or machine
 paths in Git or release assets. Fixtures must be synthetic or public book metadata.
 
 Run `npm run verify` before committing. Keep all official Obsidian source checks
-enabled. Publication, public repository visibility, tags, GitHub releases, and
-community-directory submission are intentionally deferred until the user asks.
+enabled. The user made this repository public and submitted a draft community
+entry on 25 October 2026. Pushing fixes and running hosted preview scans are
+authorized. Publishing the community listing remains deferred. Do not create a
+public GitHub release merely to replace an available branch preview scan.
 Do not replace an existing installed plugin ID automatically. The standalone ID
 is `book-collection`; the earlier private prototype used `obsidian-books`.

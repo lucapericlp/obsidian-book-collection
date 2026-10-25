@@ -177,3 +177,23 @@ and rejected an outside active note. It made no network requests and preserved
 every Markdown file's SHA-256. The prototype's enabled state was restored; no main
 vault installation was changed. The hosted 0.6.2 result is recorded below when
 available; earlier release results remain historical.
+
+### Completed hosted result for 0.6.2
+
+The dashboard shows **Completed** for release **0.6.2**, source commit
+`66b0015f6083752db75c00a4bba287567367f92d`, with **8 Pass results, 0 errors,
+0 warnings, and 0 recommendations**. The prior vault-enumeration advisory is gone.
+The eight passes cover both release-asset attestations, network behavior, vault
+reads, vault writes, dependencies, code obfuscation, and byte-for-byte build
+reproduction. The listing still explicitly states that it is a **draft and not
+yet visible to the public**; its Publish control was not used.
+
+[GitHub CI run 40194065483](https://github.com/lucapericlp/obsidian-book-collection/actions/runs/40194065483)
+passed the complete verification gate and attested the assets. Each asset passed
+`gh attestation verify` constrained to the exact source commit, this repository's
+`verify.yml` signer, and GitHub-hosted runners. The public release downloads were
+also compared byte for byte against the verified local build:
+
+- `main.js`: `02bae7efc8e4b890e32d7172ec157efad240dd01e481009867097e95e60ed610`
+- `manifest.json`: `70d3004fa2a6104662437cc9a8864cee080e70c25a1aeb4ec725f0d0b7795ce0`
+- `styles.css`: `bfdf1a9ff59c993ed67a89e77f855834e7c8db3caaa74835e6a4402cd0a5cea3`
